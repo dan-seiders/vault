@@ -1,0 +1,86 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
+global:
+  enabled: true
+
+server:
+  dataStorage:
+    size: 20Gi
+  # auditStorage:
+  #   enabled: true
+  updateStrategyType: "RollingUpdate" # set to OnDelete for manual version upgrades
+
+  image:
+    # repository: "hashicorp/vault-enterprise"
+    # tag: "1.18.1-ent"
+    repository: "hashicorp/vault"
+    tag: "1.18.1"
+
+  # enterpriseLicense:
+  #   secretName: "vault-license"
+  #   secretKey: "license"
+  
+  injector:
+    enabled: false
+
+  volumes:
+  - name: tls-certs
+    secret:
+      secretName: tls-certs
+
+  volumeMounts:
+    - mountPath: /vault/userconfig/tls-certs
+      name: tls-certs
+      readOnly: true
+
+  extraEnvironmentVars:
+      VAULT_CACERT: /vault/userconfig/tls-certs/ca.crt
+      VAULT_ADDR: https://somevaultaddress.com
+      # VAULT_LOG_LEVEL: debug
+
+  ha:
+    enabled: true
+    replicas: 3
+   
+    raft:
+      enabled: true
+      setNodeId: true
+
+      config: |
+        ui = true
+        disable_mlock = true
+        service_registration "kubernetes" {}
+
+        listener "tcp" {
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+          tls_ca_cert_file = "/vault/userconfig/tls-certs/ca.crt"
+          tls_cert_file = "/vault/userconfig/tls-certs/tls.crt"
+          tls_key_file = "/vault/userconfig/tls-certs/tls.key"
+
+          telemetry {
+            unauthenticated_metrics_access = true
+          }
+        }
+
+        telemetry {
+          prometheus_retention_time = "1h"
+          disable_hostname = true
+        }
+
+        storage "raft" {
+          path = "/vault/data"
+          retry_join {
+            auto_join = "provider=k8s label_selector=\"app.kubernetes.io/name=vault,component=server\" namespace=\"{{ .Release.Namespace }}\""
+            auto_join_scheme = "https"
+            leader_tls_servername   = "somevaultaddress.com"
+            leader_ca_cert_file = "/vault/userconfig/tls-certs/ca.crt"
+            leader_client_cert_file = "/vault/userconfig/tls-certs/tls.crt"
+            leader_client_key_file = "/vault/userconfig/tls-certs/tls.key"
+          }
+        }
+
+ui:
+  enabled: true
+  externalPort: 8200
