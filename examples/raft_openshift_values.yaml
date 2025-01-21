@@ -23,12 +23,12 @@ server:
   # enterpriseLicense:
   #   secretName: "vault-license"
   #   secretKey: "license"
-  
+
   # OpenShift only - create a route to expose the service
   # By default the created route will be of type passthrough
   route:
     enabled: false
-    
+
   injector:
     enabled: false
 
@@ -50,7 +50,7 @@ server:
   ha:
     enabled: true
     replicas: 3
-   
+
     raft:
       enabled: true
       setNodeId: true
