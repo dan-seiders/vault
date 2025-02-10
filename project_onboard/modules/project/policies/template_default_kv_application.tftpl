@@ -1,0 +1,11 @@
+path "kv2/*" {
+  capabilities = ["list"]
+}
+
+path "kv2/data/${kv_path}/*" {
+  capabilities = ["read", "list"]
+}
+
+path "kv2/metadata/${kv_path}/*" {
+  capabilities = ["read", "list"]
+}

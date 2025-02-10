@@ -1,0 +1,23 @@
+path "kv2/*" {
+  capabilities = ["list"]
+}
+
+path "kv2/data/${kv_path}/*" {
+  capabilities = ["create", "read", "update", "list"]
+}
+
+path "kv2/delete/${kv_path}/*" {
+  capabilities = ["update"]
+}
+
+path "kv2/undelete/${kv_path}/*" {
+  capabilities = ["update"]
+}
+
+path "kv2/destroy/${kv_path}/*" {
+  capabilities = ["update"]
+}
+
+path "kv2/metadata/${kv_path}/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
