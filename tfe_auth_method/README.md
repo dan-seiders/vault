@@ -47,6 +47,6 @@ This repo can be used to quickly configure Vault to allow dynamic credentials fr
 Vault now has the necessary configuration to allow Terraform to dynamically authenticate to Vault. To use this auth method for a Terraform workspace - Add TF workspace vars. The org/project/workspace/run_phase need to be within the scope of vault_jwt_auth_backend_role.
 
 - TFC_VAULT_ADDR=https://some_hostname
-- TFC_VAULT_PROVIDER_AUTH=false
+- TFC_VAULT_PROVIDER_AUTH=true
 - TFC_VAULT_RUN_ROLE=admin
 - TFC_VAULT_AUTH_PATH=tfe
